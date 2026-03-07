@@ -10,8 +10,8 @@ app.use(express.json());
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'shauryaomm@gmail.com',
-    pass: 'jgqjmxyhctodgqdg'
+    user: 'your_email@gmail.com',
+    pass: 'your_app_password'
   }
 });
 
@@ -20,7 +20,7 @@ app.post('/api/send-approval', async (req, res) => {
   const { userEmail, userName, eventName, eventDate, department, role, depinc, depphno, r_id } = req.body;
 
   const mailOptions = {
-    from: 'shauryaomm@gmail.com',
+    from: 'your_email@gmail.com',
     to: userEmail,
     subject: `Registration Approved - ${eventName}`,
     html: `

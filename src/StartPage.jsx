@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import AdminPage from "./adminpage";
 import RegistrationForm from "./RegistrationForm";
-import AttendanceChecker from "./AttendanceChecker";
 import DepartmentManager from "./DepartmentManager";
 import SevaChart from "./SevaChart";
+import EventsManager from "./EventsManager";
 import { useLanguage } from "./LanguageContext";
 import NotificationPopup from "./NotificationPopup";
 
@@ -62,17 +62,6 @@ function Sidebar({ currentPage, setCurrentPage }) {
           >
             <span className="text-lg">👥</span>
             <span>Admin Panel</span>
-          </button>
-          <button
-            onClick={() => setCurrentPage("attendance-checker")}
-            className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
-              currentPage === "attendance-checker"
-                ? 'bg-blue-600 text-white shadow-md' 
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <span className="text-lg">✅</span>
-            <span>Attendance</span>
           </button>
           <button
             onClick={() => setCurrentPage("seva-chart")}
@@ -255,30 +244,6 @@ export default function StartPage() {
     );
   }
 
-  if (currentPage === "attendance-checker") {
-    return (
-      <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-        <div className="flex-1">
-          <div className="bg-white border-b border-gray-200 px-4 py-3">
-            <div className="flex justify-between items-center">
-              <h1 className="text-lg font-medium text-gray-900">Attendance Checker</h1>
-              <button
-                onClick={() => setCurrentPage("home")}
-                className="px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-              >
-                ← Back
-              </button>
-            </div>
-          </div>
-          <div className="p-4">
-            <AttendanceChecker />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (currentPage === "seva-chart") {
     return (
       <div className="min-h-screen bg-gray-50 flex">
@@ -301,10 +266,10 @@ export default function StartPage() {
         <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
         <div className="flex-1">
           <div className="bg-white border-b border-gray-300 px-6 py-4">
-            <h1 className="text-xl font-semibold text-gray-900">Event Statistics</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Event Management</h1>
           </div>
           <div className="p-6">
-            <SevaChart selectedEvent={selectedEvent} onBack={() => setCurrentPage("home")} />
+            <EventsManager />
           </div>
         </div>
       </div>
@@ -358,12 +323,6 @@ export default function StartPage() {
               <div className="text-4xl mb-3">👥</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Admin Panel</h3>
               <p className="text-sm text-gray-600">Approve and manage user registrations</p>
-            </div>
-            
-            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setCurrentPage("attendance-checker")}>
-              <div className="text-4xl mb-3">✅</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Attendance</h3>
-              <p className="text-sm text-gray-600">Check and manage attendance records</p>
             </div>
           </div>
           
