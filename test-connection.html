@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Connection Test</title>
+</head>
+<body>
+    <h1>Testing Supabase Connection</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        const supabaseUrl = 'https://smktdpkfhfvkcsikislh.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNta3RkcGtmaGZ2a2NzaWtpc2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2NzQ3NTYsImV4cCI6MjA4NjI1MDc1Nn0.VF9fbPuce4-4yQ5HHbyOxFAWgli60l-4SUh1gJUHpQ4'
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        const results = document.getElementById('results')
+
+        async function testConnection() {
+            results.innerHTML = '<p>Testing connections...</p>'
+
+            // Test project table
+            const { data: projectData, error: projectError } = await supabase
+                .from('project')
+                .select('*')
+                .limit(1)
+            
+            results.innerHTML += `<h3>Project Table:</h3>`
+            results.innerHTML += projectError 
+                ? `<p style="color:red">❌ Error: ${projectError.message}</p>` 
+                : `<p style="color:green">✅ Success! Found ${projectData?.length || 0} records</p>`
+
+            // Test users table
+            const { data: usersData, error: usersError } = await supabase
+                .from('users')
+                .select('*')
+                .limit(1)
+            
+            results.innerHTML += `<h3>Users Table:</h3>`
+            results.innerHTML += usersError 
+                ? `<p style="color:red">❌ Error: ${usersError.message}</p>` 
+                : `<p style="color:green">✅ Success! Found ${usersData?.length || 0} records</p>`
+
+            // Test dep table
+            const { data: depData, error: depError } = await supabase
+                .from('dep')
+                .select('*')
+                .limit(1)
+            
+            results.innerHTML += `<h3>Dep Table:</h3>`
+            results.innerHTML += depError 
+                ? `<p style="color:red">❌ Error: ${depError.message}</p>` 
+                : `<p style="color:green">✅ Success! Found ${depData?.length || 0} records</p>`
+        }
+
+        testConnection()
+    </script>
+</body>
+</html>
