@@ -19,7 +19,7 @@ export default function AdminPage({ onBack, defaultSection = "registrations", se
     try {
       let query = supabase
         .from("users")
-        .select("id, name, email, phone_number, role, department, status, event, created_at, attendance, atotal, r_id")
+        .select("id, name, email, phone_number, role, department, status, event, eventdate, created_at, attendance, atotal, r_id")
         .neq("name", "Event Creator")
         .neq("email", "admin@event.com")
         .not("status", "eq", "event_created")
