@@ -6,6 +6,8 @@ export default function SevaChart({ selectedEvent, onBack }) {
   const [currentEvent, setCurrentEvent] = useState(selectedEvent || "");
   const [sevaAssignments, setSevaAssignments] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     fetchEvents();
@@ -65,6 +67,10 @@ export default function SevaChart({ selectedEvent, onBack }) {
     item.persons.some(p => p.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedAssignments = filteredAssignments.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div>
       <div className="mb-6">
@@ -83,14 +89,27 @@ export default function SevaChart({ selectedEvent, onBack }) {
         </select>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 flex gap-2">
         <input
           type="text"
           placeholder="Search by department, role, or person name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-md border border-gray-300 rounded px-3 py-2"
+          className="flex-1 max-w-md border border-gray-300 rounded px-3 py-2"
         />
+        <select
+          value={itemsPerPage}
+          onChange={(e) => {
+            setItemsPerPage(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded px-3 py-2"
+        >
+          <option value={5}>5 per page</option>
+          <option value={10}>10 per page</option>
+          <option value={25}>25 per page</option>
+          <option value={50}>50 per page</option>
+        </select>
       </div>
 
       <div className="bg-white rounded border border-gray-300 shadow-sm">
@@ -107,7 +126,7 @@ export default function SevaChart({ selectedEvent, onBack }) {
               </tr>
             </thead>
             <tbody>
-              {filteredAssignments.map((item, index) => (
+              {paginatedAssignments.map((item, index) => (
                 <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="border border-gray-300 px-4 py-3">
                     <div className="font-medium text-gray-900">{item.department}</div>
@@ -123,6 +142,28 @@ export default function SevaChart({ selectedEvent, onBack }) {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="px-4 py-3 border-t border-gray-300 bg-gray-50 flex items-center justify-between">
+          <span className="text-xs text-gray-600">
+            {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredAssignments.length)} of {filteredAssignments.length}
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-100"
+            >
+              ‹
+            </button>
+            <span className="px-2 py-1 text-xs">{currentPage}/{totalPages}</span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 text-xs border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-100"
+            >
+              ›
+            </button>
+          </div>
         </div>
       </div>
     </div>
