@@ -23,8 +23,7 @@ export default function AdminPage({ onBack, defaultSection = "registrations", se
         .neq("name", "Event Creator")
         .neq("email", "admin@event.com")
         .not("status", "eq", "event_created")
-        .order("created_at", { ascending: false })
-        .range(0, 99);
+        .order("created_at", { ascending: false });
       
       // Filter by selected event if provided
       if (selectedEvent) {
@@ -49,7 +48,7 @@ export default function AdminPage({ onBack, defaultSection = "registrations", se
   const handleApprove = async (formData) => {
     try {
       // Only include fields that exist in the users table
-      const validFields = ['department', 'role', 'a_date', 'slotn', 'slots', 'slote', 'extra', 'travelling', 'salaryamount', 'petty_cash', 'total_amount', 'depinc'];
+      const validFields = ['department', 'role', 'a_date', 'slotn', 'slots', 'slote', 'extra', 'travelling', 'salaryamount', 'petty_cash', 'total', 'depinc'];
       const updateData = { status: "approved" };
       
       validFields.forEach(field => {
@@ -143,7 +142,7 @@ export default function AdminPage({ onBack, defaultSection = "registrations", se
   const handleEdit = async (formData) => {
     try {
       // Only include fields that exist in the users table
-      const validFields = ['department', 'role', 'a_date', 'slotn', 'slots', 'slote', 'extra', 'travelling', 'salaryamount', 'petty_cash', 'total_amount', 'depinc'];
+      const validFields = ['department', 'role', 'a_date', 'slotn', 'slots', 'slote', 'extra', 'travelling', 'salaryamount', 'petty_cash', 'total', 'depinc'];
       const updateData = {};
       
       validFields.forEach(field => {
@@ -706,7 +705,7 @@ function EditModal({ user, onSubmit, onClose }) {
       if (submitData.petty_cash === "") submitData.petty_cash = null;
       
       if (isPaidVolunteer) {
-        submitData.total_amount = calculateTotal();
+        submitData.total = calculateTotal();
       }
       
       await onSubmit(submitData);
@@ -958,7 +957,7 @@ function ApproveModal({ user, onSubmit, onClose }) {
       if (submitData.petty_cash === "") submitData.petty_cash = null;
       
       if (isPaidVolunteer) {
-        submitData.total_amount = calculateTotal();
+        submitData.total = calculateTotal();
       }
       
       await onSubmit(submitData);

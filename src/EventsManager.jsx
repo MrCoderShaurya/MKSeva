@@ -344,15 +344,27 @@ function EventModal({ event, onClose, onSuccess }) {
           .from("project")
           .update(formData)
           .eq("name", event.name);
-        if (!error) onSuccess();
+        if (error) {
+          console.error("Update error:", error);
+          alert("Error updating event: " + error.message);
+          return;
+        }
+        onSuccess();
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("project")
-          .insert([{ ...formData, created_at: new Date().toISOString() }]);
-        if (!error) onSuccess();
+          .insert([{ ...formData, created_at: new Date().toISOString() }])
+          .select();
+        if (error) {
+          console.error("Create error:", error);
+          alert("Error creating event: " + error.message);
+          return;
+        }
+        onSuccess();
       }
     } catch (err) {
-      console.error(err);
+      console.error("Submit error:", err);
+      alert("Error: " + err.message);
     } finally {
       setLoading(false);
     }

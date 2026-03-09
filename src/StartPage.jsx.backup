@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import AdminPage from "./adminpage";
+import RegistrationForm from "./RegistrationForm";
+import DepartmentManager from "./DepartmentManager";
 import SevaChart from "./SevaChart";
-import EventCreationForm from "./EventCreationForm";
-import SalaryManagement from "./SalaryManagement";
-import EventDetails from "./EventDetails";
+import EventsManager from "./EventsManager";
 import { useLanguage } from "./LanguageContext";
 import NotificationPopup from "./NotificationPopup";
 
-function Sidebar({ currentPage, setCurrentPage, events, selectedEvent, setSelectedEvent, setEventSubTab }) {
+function Sidebar({ currentPage, setCurrentPage }) {
   return (
-    <div className="w-64 bg-white border-r border-gray-300 flex flex-col h-screen overflow-y-auto">
+    <div className="w-64 bg-white border-r border-gray-300 flex flex-col h-screen">
       <div className="px-5 py-4 border-b border-gray-300 bg-gradient-to-r from-blue-600 to-blue-700">
         <h1 className="text-lg font-bold text-white">Event Manager</h1>
         <p className="text-xs text-blue-100 mt-0.5">Admin Dashboard</p>
@@ -20,10 +20,7 @@ function Sidebar({ currentPage, setCurrentPage, events, selectedEvent, setSelect
         <div className="mb-3">
           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-2">Main Menu</h3>
           <button
-            onClick={() => {
-              setCurrentPage("home");
-              setSelectedEvent(null);
-            }}
+            onClick={() => setCurrentPage("home")}
             className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
               currentPage === "home"
                 ? 'bg-blue-600 text-white shadow-md' 
@@ -33,40 +30,56 @@ function Sidebar({ currentPage, setCurrentPage, events, selectedEvent, setSelect
             <span className="text-lg">🏠</span>
             <span>Home</span>
           </button>
-
+          <button
+            onClick={() => setCurrentPage("events")}
+            className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
+              currentPage === "events"
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <span className="text-lg">🎯</span>
+            <span>Events</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage("departments")}
+            className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
+              currentPage === "departments"
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <span className="text-lg">🏢</span>
+            <span>Departments</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage("admin")}
+            className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
+              currentPage === "admin"
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <span className="text-lg">👥</span>
+            <span>Admin Panel</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage("seva-chart")}
+            className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
+              currentPage === "seva-chart"
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <span className="text-lg">📊</span>
+            <span>Seva Chart</span>
+          </button>
         </div>
-
-        {events.length > 0 && (
-          <div className="mb-3">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-2">Events</h3>
-            {events.map((event) => (
-              <button
-                key={event.name}
-                onClick={() => {
-                  setSelectedEvent(event.name);
-                  setCurrentPage("event-detail");
-                  setEventSubTab("seva-chart");
-                }}
-                className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
-                  selectedEvent === event.name
-                    ? 'bg-blue-600 text-white shadow-md' 
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <span className="text-lg">🎯</span>
-                <span className="truncate">{event.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
         
         <div className="mb-3">
           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-2">Data Management</h3>
           <button
-            onClick={() => {
-              setCurrentPage("import");
-              setSelectedEvent(null);
-            }}
+            onClick={() => setCurrentPage("import")}
             className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
               currentPage === "import"
                 ? 'bg-blue-600 text-white shadow-md' 
@@ -77,10 +90,7 @@ function Sidebar({ currentPage, setCurrentPage, events, selectedEvent, setSelect
             <span>Import</span>
           </button>
           <button
-            onClick={() => {
-              setCurrentPage("export");
-              setSelectedEvent(null);
-            }}
+            onClick={() => setCurrentPage("export")}
             className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
               currentPage === "export"
                 ? 'bg-blue-600 text-white shadow-md' 
@@ -107,9 +117,37 @@ export default function StartPage() {
   const { t, language, changeLanguage } = useLanguage();
   const [currentPage, setCurrentPage] = useState("home");
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [eventSubTab, setEventSubTab] = useState("seva-chart");
   const [events, setEvents] = useState([]);
   const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    const pathSegments = path.split('/').filter(segment => segment);
+
+    let eventFromUrl = null;
+    if (pathSegments.length > 0) {
+      if (pathSegments[0].toLowerCase() === 'register' && pathSegments[1]) {
+        eventFromUrl = pathSegments[1];
+      } else {
+        eventFromUrl = pathSegments[0];
+      }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventFromQuery = urlParams.get('event');
+
+    if (eventFromQuery) {
+      setSelectedEvent(eventFromQuery);
+      setCurrentPage("register");
+    } else if (eventFromUrl) {
+      const formattedEventName = decodeURIComponent(eventFromUrl)
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      setSelectedEvent(formattedEventName);
+      setCurrentPage("register");
+    }
+  }, []);
 
   const fetchEvents = async () => {
     try {
@@ -130,22 +168,32 @@ export default function StartPage() {
     fetchEvents();
   }, []);
 
-  const handleEventCreated = () => {
-    fetchEvents();
-    setNotification({ message: "Event created! Check sidebar.", type: "success" });
-  };
+  window.refreshEvents = fetchEvents;
+
+  if (currentPage === "register") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <div className="flex-1">
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex justify-between items-center">
+              <h1 className="text-lg font-medium text-gray-900">
+                {selectedEvent ? `${selectedEvent} - Registration` : 'Event Registration'}
+              </h1>
+            </div>
+          </div>
+          <div className="p-4">
+            <RegistrationForm selectedEvent={selectedEvent} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (currentPage === "import") {
     return (
       <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar 
-          currentPage={currentPage} 
-          setCurrentPage={setCurrentPage} 
-          events={events}
-          selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
-          setEventSubTab={setEventSubTab}
-        />
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
         <div className="flex-1">
           <div className="bg-white border-b border-gray-300 px-6 py-4">
             <h1 className="text-xl font-semibold text-gray-900">Import Data</h1>
@@ -161,14 +209,7 @@ export default function StartPage() {
   if (currentPage === "export") {
     return (
       <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar 
-          currentPage={currentPage} 
-          setCurrentPage={setCurrentPage} 
-          events={events}
-          selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
-          setEventSubTab={setEventSubTab}
-        />
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
         <div className="flex-1">
           <div className="bg-white border-b border-gray-300 px-6 py-4">
             <h1 className="text-xl font-semibold text-gray-900">Export Data</h1>
@@ -181,72 +222,54 @@ export default function StartPage() {
     );
   }
 
-
-
-  if (currentPage === "event-detail" && selectedEvent) {
+  if (currentPage === "departments") {
     return (
       <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar 
-          currentPage={currentPage} 
-          setCurrentPage={setCurrentPage} 
-          events={events}
-          selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
-          setEventSubTab={setEventSubTab}
-        />
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
         <div className="flex-1">
-          <div className="bg-white border-b border-gray-300">
-            <div className="px-6 py-4">
-              <h1 className="text-xl font-semibold text-gray-900">{selectedEvent}</h1>
-            </div>
-            <div className="flex border-t border-gray-200">
-              <button
-                onClick={() => setEventSubTab("seva-chart")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  eventSubTab === "seva-chart"
-                    ? 'border-blue-600 text-blue-600 bg-blue-50'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                📊 Seva Chart
-              </button>
-              <button
-                onClick={() => setEventSubTab("admin-panel")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  eventSubTab === "admin-panel"
-                    ? 'border-blue-600 text-blue-600 bg-blue-50'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                👥 Admin Panel
-              </button>
-              <button
-                onClick={() => setEventSubTab("details")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  eventSubTab === "details"
-                    ? 'border-blue-600 text-blue-600 bg-blue-50'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                📋 Details
-              </button>
-              <button
-                onClick={() => setEventSubTab("salary")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  eventSubTab === "salary"
-                    ? 'border-blue-600 text-blue-600 bg-blue-50'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                💰 Salary
-              </button>
-            </div>
+          <DepartmentManager onBack={() => setCurrentPage("home")} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === "admin") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <div className="flex-1">
+          <AdminPage onBack={() => setCurrentPage("home")} selectedEvent={selectedEvent} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === "seva-chart") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <div className="flex-1">
+          <div className="bg-white border-b border-gray-300 px-6 py-4">
+            <h1 className="text-xl font-semibold text-gray-900">Seva Chart - Department Allocation</h1>
           </div>
           <div className="p-6">
-            {eventSubTab === "seva-chart" && <SevaChart selectedEvent={selectedEvent} />}
-            {eventSubTab === "admin-panel" && <AdminPage selectedEvent={selectedEvent} />}
-            {eventSubTab === "details" && <EventDetails selectedEvent={selectedEvent} />}
-            {eventSubTab === "salary" && <SalaryManagement selectedEvent={selectedEvent} />}
+            <SevaChart selectedEvent={selectedEvent} onBack={() => setCurrentPage("home")} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === "events") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <div className="flex-1">
+          <div className="bg-white border-b border-gray-300 px-6 py-4">
+            <h1 className="text-xl font-semibold text-gray-900">Event Management</h1>
+          </div>
+          <div className="p-6">
+            <EventsManager />
           </div>
         </div>
       </div>
@@ -255,14 +278,7 @@ export default function StartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar 
-        currentPage={currentPage} 
-        setCurrentPage={setCurrentPage} 
-        events={events}
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-        setEventSubTab={setEventSubTab}
-      />
+      <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
       <div className="flex-1">
         <div className="bg-white border-b border-gray-300 px-6 py-4">
           <div className="flex justify-between items-center">
@@ -270,7 +286,7 @@ export default function StartPage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 {t('eventManagementSystem')}
               </h1>
-              <p className="text-sm text-gray-600 mt-1">Create and manage events</p>
+              <p className="text-sm text-gray-600 mt-1">Manage events, departments, and registrations</p>
             </div>
             <button
               onClick={() => changeLanguage(language === 'en' ? 'hi' : 'en')}
@@ -290,7 +306,43 @@ export default function StartPage() {
             />
           )}
           
-          <EventCreationForm onEventCreated={handleEventCreated} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setCurrentPage("events")}>
+              <div className="text-4xl mb-3">🎯</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Events</h3>
+              <p className="text-sm text-gray-600">View event statistics and registrations</p>
+            </div>
+            
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setCurrentPage("departments")}>
+              <div className="text-4xl mb-3">🏢</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Departments</h3>
+              <p className="text-sm text-gray-600">Manage departments and assignments</p>
+            </div>
+            
+            <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setCurrentPage("admin")}>
+              <div className="text-4xl mb-3">👥</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Admin Panel</h3>
+              <p className="text-sm text-gray-600">Approve and manage user registrations</p>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Quick Actions</h3>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setCurrentPage("import")}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
+              >
+                <span>📥</span> Import Data
+              </button>
+              <button
+                onClick={() => setCurrentPage("export")}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-2"
+              >
+                <span>📤</span> Export Data
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
