@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import AdminPage from "./adminpage";
+import DepartmentManager from "./DepartmentManager";
 import SevaChart from "./SevaChart";
 import EventCreationForm from "./EventCreationForm";
 import SalaryManagement from "./SalaryManagement";
@@ -45,7 +46,7 @@ function Sidebar({ currentPage, setCurrentPage, events, selectedEvent, setSelect
                 onClick={() => {
                   setSelectedEvent(event.name);
                   setCurrentPage("event-detail");
-                  setEventSubTab("seva-chart");
+                  setEventSubTab("details");
                 }}
                 className={`w-full text-left px-3 py-2 text-sm font-semibold rounded-lg mb-1 flex items-center gap-2 transition-all ${
                   selectedEvent === event.name
@@ -201,14 +202,14 @@ export default function StartPage() {
             </div>
             <div className="flex border-t border-gray-200">
               <button
-                onClick={() => setEventSubTab("seva-chart")}
+                onClick={() => setEventSubTab("details")}
                 className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  eventSubTab === "seva-chart"
+                  eventSubTab === "details"
                     ? 'border-blue-600 text-blue-600 bg-blue-50'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                📊 Seva Chart
+                📋 Details
               </button>
               <button
                 onClick={() => setEventSubTab("admin-panel")}
@@ -221,14 +222,24 @@ export default function StartPage() {
                 👥 Admin Panel
               </button>
               <button
-                onClick={() => setEventSubTab("details")}
+                onClick={() => setEventSubTab("departments")}
                 className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  eventSubTab === "details"
+                  eventSubTab === "departments"
                     ? 'border-blue-600 text-blue-600 bg-blue-50'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                📋 Details
+                🏢 Departments
+              </button>
+              <button
+                onClick={() => setEventSubTab("seva-chart")}
+                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  eventSubTab === "seva-chart"
+                    ? 'border-blue-600 text-blue-600 bg-blue-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                📊 Seva Chart
               </button>
               <button
                 onClick={() => setEventSubTab("salary")}
@@ -238,14 +249,15 @@ export default function StartPage() {
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                💰 Salary
+                💰 Accounts
               </button>
             </div>
           </div>
           <div className="p-6">
-            {eventSubTab === "seva-chart" && <SevaChart selectedEvent={selectedEvent} />}
-            {eventSubTab === "admin-panel" && <AdminPage selectedEvent={selectedEvent} />}
             {eventSubTab === "details" && <EventDetails selectedEvent={selectedEvent} />}
+            {eventSubTab === "admin-panel" && <AdminPage selectedEvent={selectedEvent} />}
+            {eventSubTab === "departments" && <DepartmentManager selectedEvent={selectedEvent} />}
+            {eventSubTab === "seva-chart" && <SevaChart selectedEvent={selectedEvent} />}
             {eventSubTab === "salary" && <SalaryManagement selectedEvent={selectedEvent} />}
           </div>
         </div>
